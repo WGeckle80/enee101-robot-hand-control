@@ -9,8 +9,8 @@ movement options:
 * Flexing of the wrist back and fourth
 * Turning of the wrist left and right
 
-The rules were simple: no hardware modifications of the hand were allowed,
-but everything else, including serial communication, was fair game.
+The rules were simple: no hardware modifications of the hand were allowed.
+Everything else, including serial communication, was fair game.
 
 My goal for this project was simple: control the hand using a game controller.
 To accomplish this, I first turned to the Arduino procedures.  In essence,
@@ -18,7 +18,7 @@ the Arduino decides what to do, and to what intensity, based on serial input.
 Then, I needed something on my computer to both process controller input and
 send the associated serial information.  I chose Python along with the pygame
 and pyserial APIs.  The Python program brings up a pygame window, processes
-controller inputs on said windows, and sends the appropriate serial information
+controller inputs on said window, and sends the appropriate serial information
 to the Arduino.
 
 I won the competition by a unanimous vote from the ENEE101 teaching team.
