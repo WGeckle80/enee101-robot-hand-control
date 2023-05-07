@@ -30,8 +30,8 @@ in future robotics competitions in ENEE101.
 ## Usage
 
 Acquire the robot hand from Dr. Romel Gomez at UMD (with permission of course),
-or build your own.  I do not currently know if build instructions are provided
-online.  If tangible results aren't a requirement, or the Arduino code is
+or build your own.  Unfortunately, build instructions are currently not
+developed.  If tangible results aren't a requirement, or the Arduino code is
 modified to work with your own project, then the minimum requirement is an
 Arduino.
 
