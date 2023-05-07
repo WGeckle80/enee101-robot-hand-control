@@ -63,8 +63,8 @@ python3 robot_hand_control.py /dev/ttyACM0
 
 ## Acknowledgements
 
-The robot hand used for this competition was largely developed by Matthew
-Schuyler, and overseen by Dr. Romel Gomez.  I would like to thank them
+The robot hand used for this competition was developed by Matthew Schuyler,
+with development overseen by Dr. Romel Gomez.  I would like to thank them
 for developing the hand and putting on the competition.  Additionally,
 I would like to thank the entire ENEE101 Spring 2023 teaching team,
 with a special mention to my UTF, Emma Griffith.
