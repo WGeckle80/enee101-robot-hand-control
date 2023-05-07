@@ -3,6 +3,9 @@
  * 5/6/23
  *
  * Define the robot hand movements.
+ *
+ * The robot hand and original testing code was developed by Matthew
+ * Schuyler.  Development was overseen by Dr. Romel Gomez.
  */
 
 
@@ -13,13 +16,13 @@
 #define MAX_SERVO_VALUE 500
 
 enum RobotPart {
-    ROBOT_THUMB = 1,
-    ROBOT_INDEX = 2,
-    ROBOT_MIDDLE = 3,
-    ROBOT_RING = 4,
-    ROBOT_PINKY = 5,
-    ROBOT_WRISTFLEX = 6,
-    ROBOT_WRISTTURN = 7
+    ROBOT_THUMB = 3,
+    ROBOT_INDEX = 4,
+    ROBOT_MIDDLE = 2,
+    ROBOT_RING = 1,
+    ROBOT_PINKY = 0,
+    ROBOT_WRISTFLEX = 14,
+    ROBOT_WRISTTURN = 15
 };
 
 

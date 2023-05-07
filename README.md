@@ -44,10 +44,6 @@ git clone https://github.com/WGeckle80/enee101-robot-hand-control.git
 Upload the `robot_hand_procedure.ino` sketch from the `robot_hand_procedure`
 directory to a target Arduino, and take note of its port name.
 
-**Note: while the sketch compiles, it is currently incomplete.  I do not
-currently have permission to upload code based on the work of Matthew Schuyler.
-All code in this repository is entirely my own.**
-
 Install Python 3 and pip (if applicable), and install the required libraries
 with the following terminal commands:
 

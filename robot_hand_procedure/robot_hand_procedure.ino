@@ -3,6 +3,9 @@
  * 5/6/23
  *
  * Define the procedure for the robot hand.
+ *
+ * The robot hand and original testing code was developed by Matthew
+ * Schuyler.  Development was overseen by Dr. Romel Gomez.
  */
 
 

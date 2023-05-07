@@ -3,6 +3,9 @@
  * 5/6/23
  *
  * Define the robot hand movements.
+ *
+ * The robot hand and original testing code was developed by Matthew
+ * Schuyler.  Development was overseen by Dr. Romel Gomez.
  */
 
 
@@ -13,14 +16,16 @@
 
 
 /*
- * Initialize object variables.
+ * Initialize the pwm module and object variables.
+ *
+ * The implementation was developed by Matthew Schuyler.
  */
 RobotHand::RobotHand()
 {
     Adafruit_PWMServoDriver pwm;
-
-    // Initialize pwm; I do not have permission to publicly post
-    // the code.
+    pwm.begin();
+    pwm.setOscillatorFrequency(25250000);  // Servos update at ~50 Hz
+    pwm.setPWMFreq(50);  // Initialize all servos
 
     this->pwm = &pwm;
     thumbOverlapFingers = false;
@@ -113,11 +118,54 @@ void RobotHand::setDefault()
  * For the wrist turn, a percentage of 0 corresponds to the maximum
  * clockwise rotation, and a percentage of 1 corresponds to the
  * maximum counterclockwise rotation.
+ *
+ * The procedure is based on the testing code developed by Matthew
+ * Schuyler.
  */
 void RobotHand::setPartPosition(RobotPart part,
                                 float percent)
 {
-    // I currently do not have permission to publicly post this code.
-    return;
+    percent = max(0.0, min(percent, 1.0));  // Clip percent to bounds.
+
+    // The index finger requires a +40 offset.
+    if (part == ROBOT_INDEX)
+    {
+        int servoValue = percent >= 0.5
+            ? MID_SERVO_VALUE
+            + 2*(percent - 0.5)*(MAX_SERVO_VALUE - MID_SERVO_VALUE)
+            : MIN_SERVO_VALUE + 2*percent*(MID_SERVO_VALUE - MIN_SERVO_VALUE);
+
+        pwm->setPWM(part, 0, servoValue + 40);
+
+        return;
+    }
+
+    // The ring and pinky movements are reversed.
+    if (part == ROBOT_RING || part == ROBOT_PINKY)
+    {
+        int servoValue = percent >= 0.5
+            ? MIN_SERVO_VALUE
+            + 2*(percent - 0.5)*(MID_SERVO_VALUE - MIN_SERVO_VALUE)
+            : MID_SERVO_VALUE + 2*(MAX_SERVO_VALUE - MID_SERVO_VALUE);
+
+        pwm->setPWM(part, 0, servoValue);
+
+        return;
+    }
+
+    // If the percentage is 0, set the servo to the minimum pwm value.
+    // If the percentage is 1, set the servo to the maximum pwm value.
+    // If the percentage is 0.5, set the servo to the middle pwm value.
+    //
+    // Since the difference between the minimum and middle values is
+    // different from the difference between the middle and maximum
+    // values, there must be two cases on how a change in percent
+    // changes the servo value.
+    int servoValue = percent >= 0.5
+        ? MID_SERVO_VALUE
+        + 2*(percent - 0.5)*(MAX_SERVO_VALUE - MID_SERVO_VALUE)
+        : MIN_SERVO_VALUE + 2*percent*(MID_SERVO_VALUE - MIN_SERVO_VALUE);
+
+    pwm->setPWM(part, 0, servoValue);
 }
 

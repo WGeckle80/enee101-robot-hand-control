@@ -11,6 +11,9 @@
 
    Control instructions are shown on the main Pygame window.
 
+   The robot hand and original testing code was developed by Matthew
+   Schuyler.  Development was overseen by Dr. Romel Gomez.
+
    Language and API versions tested:
      - Python 3.10.6
      - pygame 2.4.0
