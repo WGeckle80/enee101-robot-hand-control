@@ -2,11 +2,11 @@
 # -*- coding: utf-8 -*-
 
 # Wyatt Geckle
-# 5/6/23
+# 5/11/23
 
 """Set the robot hand to be controlled by keyboard or controller input.
 
-   If using a controller, an Xinput controller, such as an Xbox One
+   If using a controller, an Xinput controller, such as a modern Xbox
    Controller, is required.
 
    Control instructions are shown on the main Pygame window.
@@ -15,17 +15,18 @@
    Schuyler.  Development was overseen by Dr. Romel Gomez.
 
    Language and API versions tested:
-     - Python 3.10.6
      - pygame 2.4.0
      - pyserial 3.5
+     - Python 3.10.6
+     - SDL 2.26.4
 """
 
 
 import sys
 
-import serial
-
 import pygame
+
+import serial
 
 
 def main():

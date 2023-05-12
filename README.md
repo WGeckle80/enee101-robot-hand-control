@@ -31,7 +31,7 @@ in future robotics competitions in ENEE101.
 
 Acquire the robot hand from Dr. Romel Gomez at UMD (with permission of course),
 or build your own.  Unfortunately, build instructions are currently not
-developed.  If tangible results aren't a requirement, or the Arduino code is
+available.  If tangible results aren't a requirement, or the Arduino code is
 modified to work with your own project, then the minimum requirement is an
 Arduino.
 
@@ -41,11 +41,16 @@ Clone the repository using
 git clone https://github.com/WGeckle80/enee101-robot-hand-control.git
 ```
 
-Upload the `robot_hand_procedure.ino` sketch from the `robot_hand_procedure`
-directory to a target Arduino, and take note of its port name.
+Install the [Arduino IDE](https://www.arduino.cc/en/software) ([Linux users
+must add themselves to the dialout group](https://support.arduino.cc/hc/en-us/articles/360016495679-Fix-port-access-on-Linux)
+).  Upload the `robot_hand_procedure.ino` sketch from the
+`robot_hand_procedure` directory to a target Arduino, and take note of its
+port name.
 
-Install Python 3 and pip (if applicable), and install the required libraries
-with the following terminal commands:
+Install Python 3 at [python.org](https://www.python.org)
+(`python3` is installed by default in many Linux distributions; install
+`python3-pip` if applicable), and install the required libraries with the
+following terminal commands:
 
 ```sh
 pip install -U pygame
@@ -59,6 +64,10 @@ For example, on Linux with a serial port of `/dev/ttyACM0`,
 ```sh
 python3 robot_hand_control.py /dev/ttyACM0
 ```
+
+If the program launched and communication was successful, the controls will
+be displayed on the pygame window.  **If a controller is used, an Xinput
+device such as a modern Xbox controller is required.**
 
 
 ## Acknowledgements
