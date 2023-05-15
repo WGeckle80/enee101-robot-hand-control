@@ -1,6 +1,6 @@
 /*
  * Wyatt Geckle
- * 5/6/23
+ * 5/15/23
  *
  * Define the robot hand movements.
  *
@@ -16,18 +16,11 @@
 
 
 /*
- * Initialize the pwm module and object variables.
- *
- * The implementation was developed by Matthew Schuyler.
+ * Initialize object variables.
  */
-RobotHand::RobotHand()
+RobotHand::RobotHand(Adafruit_PWMServoDriver *pwm)
 {
-    Adafruit_PWMServoDriver pwm;
-    pwm.begin();
-    pwm.setOscillatorFrequency(25250000);  // Servos update at ~50 Hz
-    pwm.setPWMFreq(50);  // Initialize all servos
-
-    this->pwm = &pwm;
+    this->pwm = pwm;
     thumbOverlapFingers = false;
 }
 
@@ -89,8 +82,32 @@ void RobotHand::grab(float percent)
 }
 
 /*
- * Set the robot hand to the default position.  Be sure to do this each
- * time a new mode is engaged.
+ * Set robot hand to default position with delays.
+ * Total delay time is ~2 seconds.
+ *
+ * NOTE: Initialize pwm module before calling this method.
+ */
+void RobotHand::init()
+{
+    setPartPosition(ROBOT_WRISTFLEX, 0.5);
+    delay(500);
+
+    setPartPosition(ROBOT_WRISTTURN, 0.5);
+    delay(500);
+    
+    setPartPosition(ROBOT_THUMB, 0.5);
+    setPartPosition(ROBOT_INDEX, 0.5);
+    setPartPosition(ROBOT_MIDDLE, 0.5);
+    setPartPosition(ROBOT_RING, 0.5);
+    setPartPosition(ROBOT_PINKY, 0.5);
+
+    delay(1000);
+    
+    thumbOverlapFingers = false;
+}
+
+/*
+ * Set the robot hand to the default position.
  */
 void RobotHand::setDefault()
 {

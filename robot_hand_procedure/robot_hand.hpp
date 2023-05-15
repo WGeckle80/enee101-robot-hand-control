@@ -1,6 +1,6 @@
 /*
  * Wyatt Geckle
- * 5/6/23
+ * 5/15/23
  *
  * Define the robot hand movements.
  *
@@ -34,11 +34,13 @@ class RobotHand
         bool thumbOverlapFingers;
 
     public:
-        RobotHand();
+        RobotHand(Adafruit_PWMServoDriver *pwm);
 
         void countDecimal(int number);
 
         void grab(float percent);
+
+        void init();
 
         void setDefault();
 

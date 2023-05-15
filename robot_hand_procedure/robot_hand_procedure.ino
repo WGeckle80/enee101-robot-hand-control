@@ -1,20 +1,27 @@
 /*
  * Wyatt Geckle
- * 5/6/23
+ * 5/15/23
  *
  * Define the procedure for the robot hand.
  *
  * The robot hand and original testing code was developed by Matthew
  * Schuyler.  Development was overseen by Dr. Romel Gomez.
+ *
+ * API versions tested:
+ *   - Wire 1.0
+ *   - Adafruit PWM Servo Driver Library 2.4.1
  */
 
 
 #include <Wire.h>
 
+#include <Adafruit_PWMServoDriver.h>
+
 #include "robot_hand.hpp"
 
 
-RobotHand robotHand;
+Adafruit_PWMServoDriver pwm = Adafruit_PWMServoDriver();
+RobotHand robotHand = RobotHand(&pwm);
 
 unsigned char serialBuffer[6];
 
@@ -22,10 +29,13 @@ unsigned char serialBuffer[6];
 void setup()
 {
     Serial.begin(9600);
+    
+    // Frequency parameters developed by Matthew Schuyler.
+    pwm.begin();
+    pwm.setOscillatorFrequency(25250000);  // Servos update at ~50 Hz
+    pwm.setPWMFreq(50);  // Initialize all servos
 
-    robotHand.setDefault();
-
-    delay(2000);
+    robotHand.init();
 
     pinMode(13, OUTPUT);
 

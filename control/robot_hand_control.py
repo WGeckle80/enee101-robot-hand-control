@@ -2,20 +2,20 @@
 # -*- coding: utf-8 -*-
 
 # Wyatt Geckle
-# 5/11/23
+# 5/15/23
 
 """Set the robot hand to be controlled by keyboard or controller input.
 
    If using a controller, an Xinput controller, such as a modern Xbox
    Controller, is required.
 
-   Control instructions are shown on the main Pygame window.
+   Control instructions are shown on the main pygame window.
 
    The robot hand and original testing code was developed by Matthew
    Schuyler.  Development was overseen by Dr. Romel Gomez.
 
    Language and API versions tested:
-     - pygame 2.4.0
+     - pygame-ce 2.2.1
      - pyserial 3.5
      - Python 3.10.6
      - SDL 2.26.4

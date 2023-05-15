@@ -42,18 +42,23 @@ git clone https://github.com/WGeckle80/enee101-robot-hand-control.git
 ```
 
 Install the [Arduino IDE](https://www.arduino.cc/en/software) ([Linux users
-must add themselves to the dialout group](https://support.arduino.cc/hc/en-us/articles/360016495679-Fix-port-access-on-Linux)
-).  Upload the `robot_hand_procedure.ino` sketch from the
+must add themselves to the dialout group](https://support.arduino.cc/hc/en-us/articles/360016495679-Fix-port-access-on-Linux)).
+Upload the `robot_hand_procedure.ino` sketch from the
 `robot_hand_procedure` directory to a target Arduino, and take note of its
 port name.
 
-Install Python 3 at [python.org](https://www.python.org)
+Install Python 3 at <https://www.python.org>
 (`python3` is installed by default in many Linux distributions; install
-`python3-pip` if applicable), and install the required libraries with the
-following terminal commands:
+`python3-pip` if applicable).  Uninstall `pygame` using
 
 ```sh
-pip install -U pygame
+pip uninstall pygame
+```
+
+Install the required libraries with the following terminal commands:
+
+```sh
+pip install -U pygame-ce
 pip install -U pyserial
 ```
 
@@ -77,4 +82,24 @@ with development overseen by Dr. Romel Gomez.  I would like to thank them
 for developing the hand and putting on the competition.  Additionally,
 I would like to thank the entire ENEE101 Spring 2023 teaching team,
 with a special mention to my UTF, Emma Griffith.
+
+
+## References
+
+Adafruit. (2023).  Adafruit PCA9685 PWM Servo Driver Library, version 2.4.1.
+<https://github.com/adafruit/Adafruit-PWM-Servo-Driver-Library>
+
+Arduino.  (2023).  Arduino.  <https://www.arduino.cc/>
+
+Arduino.  (2023).  Wire, version 1.0.
+<https://www.arduino.cc/reference/en/language/functions/communication/wire/>
+
+pygame-community.  (2023).  pygame - Community Edition, version 2.2.1.
+<https://github.com/pygame-community/pygame-ce>
+
+pyserial.  (2021).  pySerial, version 3.5.
+<https://github.com/pyserial/pyserial>
+
+Python Software Foundation.  (2023).  Python Language Reference, version 3.10.
+Available at <https://www.python.org/>
 
