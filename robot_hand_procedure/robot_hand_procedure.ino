@@ -8,8 +8,8 @@
  * Schuyler.  Development was overseen by Dr. Romel Gomez.
  *
  * API versions tested:
- *   - Wire 1.0
  *   - Adafruit PWM Servo Driver Library 2.4.1
+ *   - Wire 1.0
  */
 
 

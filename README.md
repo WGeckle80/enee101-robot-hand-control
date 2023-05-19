@@ -43,11 +43,14 @@ git clone https://github.com/WGeckle80/enee101-robot-hand-control.git
 
 Install the [Arduino IDE](https://www.arduino.cc/en/software) ([Linux users
 must add themselves to the dialout group](https://support.arduino.cc/hc/en-us/articles/360016495679-Fix-port-access-on-Linux)).
+Pull up the libary manager by selecting
+`Sketch -> Include Library -> Manage Libraries` in the top menu.
+Search for and install `Adafruit PWM Servo Driver Library`.
 Upload the `robot_hand_procedure.ino` sketch from the
 `robot_hand_procedure` directory to a target Arduino, and take note of its
 port name.
 
-Install Python 3 at <https://www.python.org>
+Install Python 3 from <https://www.python.org>
 (`python3` is installed by default in many Linux distributions; install
 `python3-pip` if applicable).  Uninstall `pygame` using
 
@@ -73,6 +76,10 @@ python3 robot_hand_control.py /dev/ttyACM0
 If the program launched and communication was successful, the controls will
 be displayed on the pygame window.  **If a controller is used, an Xinput
 device such as a modern Xbox controller is required.**
+
+Below is a short demo of everything working:
+
+![Robot Hand Demo](./demo/robot_hand_demo.gif)
 
 
 ## Acknowledgements
