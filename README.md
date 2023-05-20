@@ -43,12 +43,9 @@ git clone https://github.com/WGeckle80/enee101-robot-hand-control.git
 
 Install the [Arduino IDE](https://www.arduino.cc/en/software) ([Linux users
 must add themselves to the dialout group](https://support.arduino.cc/hc/en-us/articles/360016495679-Fix-port-access-on-Linux)).
-Pull up the libary manager by selecting
-`Sketch -> Include Library -> Manage Libraries` in the top menu.
-Search for and install `Adafruit PWM Servo Driver Library`.
-Upload the `robot_hand_procedure.ino` sketch from the
-`robot_hand_procedure` directory to a target Arduino, and take note of its
-port name.
+Install the `Adafruit PWM Servo Driver Library`.  Upload the sketch
+`robot_hand_procedure.ino` from the `robot_hand_procedure` directory to a
+target Arduino, and take note of its port name.
 
 Install Python 3 from <https://www.python.org>
 (`python3` is installed by default in many Linux distributions; install
@@ -67,7 +64,13 @@ pip install -U pyserial
 
 In the terminal, run `robot_hand_control.py` in the `control` directory with
 an extra command line parameter of the Arduino serial port name.
-For example, on Linux with a serial port of `/dev/ttyACM0`,
+For example, on Windows with a serial port of `COM3`,
+
+```sh
+py robot_hand_control.py COM3
+```
+
+and on Linux with a serial port of `/dev/ttyACM0`,
 
 ```sh
 python3 robot_hand_control.py /dev/ttyACM0

@@ -1,6 +1,6 @@
 /*
  * Wyatt Geckle
- * 5/15/23
+ * 5/20/23
  *
  * Define the robot hand movements.
  *
@@ -145,29 +145,12 @@ void RobotHand::setPartPosition(RobotPart part,
     percent = max(0.0, min(percent, 1.0));  // Clip percent to bounds.
 
     // The index finger requires a +40 offset.
-    if (part == ROBOT_INDEX)
-    {
-        int servoValue = percent >= 0.5
-            ? MID_SERVO_VALUE
-            + 2*(percent - 0.5)*(MAX_SERVO_VALUE - MID_SERVO_VALUE)
-            : MIN_SERVO_VALUE + 2*percent*(MID_SERVO_VALUE - MIN_SERVO_VALUE);
-
-        pwm->setPWM(part, 0, servoValue + 40);
-
-        return;
-    }
+    int indexOffset = part == ROBOT_INDEX ? 40 : 0;
 
     // The ring and pinky movements are reversed.
     if (part == ROBOT_RING || part == ROBOT_PINKY)
     {
-        int servoValue = percent >= 0.5
-            ? MIN_SERVO_VALUE
-            + 2*(percent - 0.5)*(MID_SERVO_VALUE - MIN_SERVO_VALUE)
-            : MID_SERVO_VALUE + 2*(MAX_SERVO_VALUE - MID_SERVO_VALUE);
-
-        pwm->setPWM(part, 0, servoValue);
-
-        return;
+        percent = 1.0 - percent;
     }
 
     // If the percentage is 0, set the servo to the minimum pwm value.
@@ -183,6 +166,6 @@ void RobotHand::setPartPosition(RobotPart part,
         + 2*(percent - 0.5)*(MAX_SERVO_VALUE - MID_SERVO_VALUE)
         : MIN_SERVO_VALUE + 2*percent*(MID_SERVO_VALUE - MIN_SERVO_VALUE);
 
-    pwm->setPWM(part, 0, servoValue);
+    pwm->setPWM(part, 0, servoValue + indexOffset);
 }
 

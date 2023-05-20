@@ -1,8 +1,7 @@
-#!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
 # Wyatt Geckle
-# 5/15/23
+# 5/20/23
 
 """Set the robot hand to be controlled by keyboard or controller input.
 
@@ -73,7 +72,7 @@ def main():
         clock.tick(30)
     
     # Get initialization message from hand.
-    hand_text = font.render(robot_hand.read_until().decode()[:-1],
+    hand_text = font.render(robot_hand.read_until().decode()[:-2],
                             False, (255, 255, 255))
 
     try:
@@ -166,7 +165,7 @@ def main():
 
             # Allow robot hand text to display on screen.
             if robot_hand.in_waiting > 0:
-                hand_text = font.render(robot_hand.read_until().decode()[:-1],
+                hand_text = font.render(robot_hand.read_until().decode()[:-2],
                                         False, (255, 255, 255))
 
 
