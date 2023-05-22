@@ -76,9 +76,12 @@ and on Linux with a serial port of `/dev/ttyACM0`,
 python3 robot_hand_control.py /dev/ttyACM0
 ```
 
-If the program launched and communication was successful, the controls will
-be displayed on the pygame window.  **If a controller is used, an Xinput
-device such as a modern Xbox controller is required.**
+If the program launched and communication was successful, the control
+parameter percentages will be shown on screen.
+
+The default controls are found, and can be modified, in the provided
+`config.ini` configuration file.  The default controller inputs are
+based on the Linux interpretation of Xinput controllers.
 
 Below is a short demo of everything working:
 
