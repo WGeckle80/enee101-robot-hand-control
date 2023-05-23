@@ -323,16 +323,16 @@ def main():
                         and joy_grab < joystick.get_numhats()):
                     if joy_grab_mask == 0b000111:
                         # Up: get second hat coordinate.
-                        grab_val = joystick.get_hat(joy_grab)[1]
+                        grab_val = joystick.get_hat(joy_grab)[1] == 1
                     elif joy_grab_mask & 0b000010:
                         # Down: get negative of second hat coordinate.
-                        grab_val = -joystick.get_hat(joy_grab)[1]
+                        grab_val = joystick.get_hat(joy_grab)[1] == -1
                     elif joy_grab_mask & 0b000001:
                         # Right: get first hat coordinate.
-                        grab_val = joystick.get_hat(joy_grab)[0]
+                        grab_val = joystick.get_hat(joy_grab)[0] == 1
                     else:
                         # Left: get negative of first hat coordinate.
-                        grab_val = -joystick.get_hat(joy_grab)[0]
+                        grab_val = joystick.get_hat(joy_grab)[0] == -1
                 elif joy_grab < joystick.get_numbuttons():
                     grab_val = joystick.get_button(joy_grab)
                 else:
@@ -354,16 +354,16 @@ def main():
                         and joy_release < joystick.get_numhats()):
                     if joy_release_mask == 0b000111:
                         # Up: get second hat coordinate.
-                        grab_val -= joystick.get_hat(joy_release)[1]
+                        grab_val -= joystick.get_hat(joy_release)[1] == 1
                     elif joy_release_mask & 0b000010:
                         # Down: get negative of second hat coordinate.
-                        grab_val -= -joystick.get_hat(joy_release)[1]
+                        grab_val -= joystick.get_hat(joy_release)[1] == -1
                     elif joy_release_mask & 0b000001:
                         # Right: get first hat coordinate.
-                        grab_val -= joystick.get_hat(joy_release)[0]
+                        grab_val -= joystick.get_hat(joy_release)[0] == 1
                     else:
                         # Left: get negative of first hat coordinate.
-                        grab_val -= -joystick.get_hat(joy_release)[0]
+                        grab_val -= joystick.get_hat(joy_release)[0] == -1
                 elif joy_release < joystick.get_numbuttons():
                     grab_val -= joystick.get_button(joy_release)
 
@@ -383,16 +383,16 @@ def main():
                         and joy_forward < joystick.get_numhats()):
                     if joy_forward_mask == 0b000111:
                         # Up: get second hat coordinate.
-                        flex_val = joystick.get_hat(joy_forward)[1]
+                        flex_val = joystick.get_hat(joy_forward)[1] == 1
                     elif joy_forward_mask & 0b000010:
                         # Down: get negative of second hat coordinate.
-                        flex_val = -joystick.get_hat(joy_forward)[1]
+                        flex_val = joystick.get_hat(joy_forward)[1] == -1
                     elif joy_forward_mask & 0b000001:
                         # Right: get first hat coordinate.
-                        flex_val = joystick.get_hat(joy_forward)[0]
+                        flex_val = joystick.get_hat(joy_forward)[0] == 1
                     else:
                         # Left: get negative of first hat coordinate.
-                        flex_val = -joystick.get_hat(joy_forward)[0]
+                        flex_val = joystick.get_hat(joy_forward)[0] == -1
                 elif joy_forward < joystick.get_numbuttons():
                     flex_val = joystick.get_button(joy_forward)
                 else:
@@ -414,16 +414,16 @@ def main():
                         and joy_backward < joystick.get_numhats()):
                     if joy_backward_mask == 0b000111:
                         # Up: get second hat coordinate.
-                        flex_val -= joystick.get_hat(joy_backward)[1]
+                        flex_val -= joystick.get_hat(joy_backward)[1] == 1
                     elif joy_backward_mask & 0b000010:
                         # Down: get negative of second hat coordinate.
-                        flex_val -= -joystick.get_hat(joy_backward)[1]
+                        flex_val -= joystick.get_hat(joy_backward)[1] == -1
                     elif joy_backward_mask & 0b000001:
                         # Right: get first hat coordinate.
-                        flex_val -= joystick.get_hat(joy_backward)[0]
+                        flex_val -= joystick.get_hat(joy_backward)[0] == 1
                     else:
                         # Left: get negative of first hat coordinate.
-                        flex_val -= -joystick.get_hat(joy_backward)[0]
+                        flex_val -= joystick.get_hat(joy_backward)[0] == -1
                 elif joy_backward < joystick.get_numbuttons():
                     flex_val -= joystick.get_button(joy_backward)
 
@@ -443,16 +443,16 @@ def main():
                         and joy_right < joystick.get_numhats()):
                     if joy_right_mask == 0b000111:
                         # Up: get second hat coordinate.
-                        turn_val = joystick.get_hat(joy_right)[1]
+                        turn_val = joystick.get_hat(joy_right)[1] == 1
                     elif joy_right_mask & 0b000010:
                         # Down: get negative of second hat coordinate.
-                        turn_val = -joystick.get_hat(joy_right)[1]
+                        turn_val = joystick.get_hat(joy_right)[1] == -1
                     elif joy_right_mask & 0b000001:
                         # Right: get first hat coordinate.
-                        turn_val = joystick.get_hat(joy_right)[0]
+                        turn_val = joystick.get_hat(joy_right)[0] == 1
                     else:
                         # Left: get negative of first hat coordinate.
-                        turn_val = -joystick.get_hat(joy_right)[0]
+                        turn_val = joystick.get_hat(joy_right)[0] == -1
                 elif joy_right < joystick.get_numbuttons():
                     turn_val = joystick.get_button(joy_right)
                 else:
@@ -474,16 +474,16 @@ def main():
                         and joy_left < joystick.get_numhats()):
                     if joy_left_mask == 0b000111:
                         # Up: get second hat coordinate.
-                        turn_val -= joystick.get_hat(joy_left)[1]
+                        turn_val -= joystick.get_hat(joy_left)[1] == 1
                     elif joy_left_mask & 0b000010:
                         # Down: get negative of second hat coordinate.
-                        turn_val -= -joystick.get_hat(joy_left)[1]
+                        turn_val -= joystick.get_hat(joy_left)[1] == -1
                     elif joy_left_mask & 0b000001:
                         # Right: get first hat coordinate.
-                        turn_val -= joystick.get_hat(joy_left)[0]
+                        turn_val -= joystick.get_hat(joy_left)[0] == 1
                     else:
                         # Left: get negative of first hat coordinate.
-                        turn_val -= -joystick.get_hat(joy_left)[0]
+                        turn_val -= joystick.get_hat(joy_left)[0] == -1
                 elif joy_left < joystick.get_numbuttons():
                     turn_val -= joystick.get_button(joy_left)
 
