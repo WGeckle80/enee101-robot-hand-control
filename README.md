@@ -97,6 +97,15 @@ I would like to thank the entire ENEE101 Spring 2023 teaching team,
 with a special mention to my UTF, Emma Griffith.
 
 
+## Similar Projects
+
+After developing the code for this competition, I found an adjacent project
+worth highlighting.
+
+u/Flashy-Specialist-69.  (2023).  Robotic arm without 3d printer.
+<https://www.reddit.com/r/arduino/comments/13skmg0/robotic_arm_without_3d_printer/>
+
+
 ## References
 
 Adafruit. (2023).  Adafruit PCA9685 PWM Servo Driver Library, version 2.4.1.
