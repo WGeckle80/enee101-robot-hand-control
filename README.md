@@ -87,6 +87,10 @@ Below is a short demo of everything working:
 
 ![Robot Hand Demo](./demo/robot_hand_demo.gif)
 
+If the Arduino requirement is not desired, a simple mode can be accessed by
+not providing a serial port when launching the program.  This mode simply
+allows the user to test inputs with the parameters on screen.
+
 
 ## Acknowledgements
 

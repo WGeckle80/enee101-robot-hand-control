@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 # Wyatt Geckle
-# 5/22/23
+# 5/30/23
 
 """Set the robot hand to be controlled by keyboard or controller input.
 
@@ -29,6 +29,65 @@ import pygame
 import serial
 
 
+def get_joystick_input(
+        joystick: pygame.joystick.Joystick,
+        input_num: int, input_mask: int) -> float:
+    """Returns joystick input percentage given input number and
+    selector.
+    
+    Args:
+        joystick: Initialized pygame joystick object.
+        input_num: The number of the desired input type.
+        input_mask: A bitmask selection of the desired input.  It
+            should have the following properties:
+                - 5th bit is 1 if using axis.
+                - 4th bit is 1 if using negative axis/hat.
+                - 3rd bit is 1 if using positive axis/hat.
+                - 2nd bit is 1 if using hat.
+                - 1st and 0th bits are binary count of hat combinations:
+                    00 -> left
+                    01 -> right
+                    10 -> down
+                    11 -> up
+
+    Returns:
+        Joystick input percentage in range [0, 1].
+    """
+
+    if joystick is None:
+        return 0.0;
+
+    if (input_mask & 0b100000
+            and input_num < joystick.get_numaxes()):
+        if input_mask & 0b001000:
+            # Positive axis: get value when in [0, 1].
+            return max(0, joystick.get_axis(input_num))
+        elif input_mask & 0b010000:
+            # Negative axis: get value when in [-1, 0].
+            return -min(joystick.get_axis(input_num), 0)
+        else:
+            # Entire axis: set value in range [0, 1].
+            return 0.5*joystick.get_axis(input_num) + 0.5
+    elif (input_mask & 0b000100
+            and input_num < joystick.get_numhats()):
+        if input_mask == 0b000111:
+            # Up: get second hat coordinate.
+            return joystick.get_hat(input_num)[1] == 1
+        elif input_mask & 0b000010:
+            # Down: get negative of second hat coordinate.
+            return joystick.get_hat(input_num)[1] == -1
+        elif input_mask & 0b000001:
+            # Right: get first hat coordinate.
+            return joystick.get_hat(input_num)[0] == 1
+        else:
+            # Left: get negative of first hat coordinate.
+            return joystick.get_hat(input_num)[0] == -1
+    elif input_num < joystick.get_numbuttons():
+        return joystick.get_button(input_num)
+    else:
+        return 0.0
+    
+
 def joystick_input(joy_input: str, input_name: str = "") -> (int, int):
     """Returns joystick input given a config string.
     
@@ -55,7 +114,7 @@ def joystick_input(joy_input: str, input_name: str = "") -> (int, int):
 
     joy_input = joy_input.lower()  # Allow variable case in config.
     input_num = -1  # input_num remains -1 if not properly set.
-    input_mask = 0
+    input_mask = 0b000000
 
     try:
         if joy_input.startswith("axis"):
@@ -70,17 +129,26 @@ def joystick_input(joy_input: str, input_name: str = "") -> (int, int):
                 input_mask = 0b100000
         elif joy_input.startswith("hat"):
             if joy_input.endswith("left"):
-                input_num = int(joy_input[3:-4])
+                input_num_str = joy_input[3:-4]
                 input_mask = 0b000100
             elif joy_input.endswith("right"):
-                input_num = int(joy_input[3:-5])
+                input_num_str = joy_input[3:-5]
                 input_mask = 0b000101
             elif joy_input.endswith("down"):
-                input_num = int(joy_input[3:-4])
+                input_num_str = joy_input[3:-4]
                 input_mask = 0b000110
             elif joy_input.endswith("up"):
-                input_num = int(joy_input[3:-2])
+                input_num_str = joy_input[3:-2]
                 input_mask = 0b000111
+            else:
+                input_num_str = "INVALID"
+            
+            # Most modern controllers only have 1 hat.  If the hat
+            # number is not supplied, use hat0.
+            if input_num_str:
+                input_num = int(input_num_str)
+            else:
+                input_num = 0
         elif joy_input.startswith("button"):
             input_num = int(joy_input[6:])
     except ValueError:
@@ -243,25 +311,36 @@ def main():
         joy_right, joy_right_mask = joystick_input("axis0+")
 
 
-    if len(sys.argv) < 2:
-        sys.stderr.write("Missing robot hand serial port.  Exiting.\n")
-        pygame.quit()
-        sys.exit(1)
+    # If robot hand serial port not provided, program is in simple mode.
+    if len(sys.argv) >= 2:
+        try:
+            robot_hand = serial.Serial(sys.argv[1], 9600, timeout=5)
+        except FileNotFoundError:
+            sys.stderr.write("Invalid robot hand serial port.  Exiting.\n")
+            pygame.quit()
+            sys.exit(1)
+        except serial.SerialException:
+            sys.stderr.write("Incorrect robot hand serial port.  Exiting.\n")
+            pygame.quit()
+            sys.exit(1)
+        
+        # Get initialization message from hand.
+        init_message = robot_hand.read_until().decode()[:-2]
+        if not init_message:
+            sys.stderr.write("Robot hand not responding.  Exiting.\n")
+            pygame.quit()
+            sys.exit(1)
+    else:
+        print("Missing robot hand serial port.  Entering joystick demo mode.")
 
-    try:
-        robot_hand = serial.Serial(sys.argv[1], 9600)
-    except FileNotFoundError:
-        sys.stderr.write("Invalid robot hand serial port.  Exiting.\n")
-        pygame.quit()
-        sys.exit(1)
-    except serial.SerialException:
-        sys.stderr.write("Robot hand not responding.  Exiting.\n")
-        pygame.quit()
-        sys.exit(1)
-
+        robot_hand = None  # If in simple mode, robot_hand is None.
+        init_message = ""
 
     screen = pygame.display.set_mode((900, 600))
-    pygame.display.set_caption("Robot Hand Control")
+    if robot_hand is None:
+        pygame.display.set_caption("Robot Hand Control (Simple Mode)")
+    else:
+        pygame.display.set_caption("Robot Hand Control")
     pygame.font.init()
     font = pygame.font.SysFont("Ubuntu", 24)
     clock = pygame.time.Clock()
@@ -271,13 +350,8 @@ def main():
     turn_serial = 127
     
     joystick = None  # joystick is None if disconnected.
-
-    # Wait for hand to initialize.
-    while robot_hand.in_waiting == 0:
-        clock.tick(30)
     
-    # Get initialization message from hand.
-    hand_text = font.render(robot_hand.read_until().decode()[:-2],
+    hand_text = font.render(init_message,
                             False, (255, 255, 255))
 
     try:
@@ -287,7 +361,8 @@ def main():
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     pygame.quit()
-                    robot_hand.close()
+                    if robot_hand is not None:
+                        robot_hand.close()
                     sys.exit()
 
             # Allow controller to disconnect and reconnect throughout
@@ -306,187 +381,24 @@ def main():
             if joystick is not None:
                 # For each attribute value, set the positive input
                 # value and subtract off the negative input value.
-
-                # Check for grab.
-                if (joy_grab_mask & 0b100000
-                        and joy_grab < joystick.get_numaxes()):
-                    if joy_grab_mask & 0b001000:
-                        # Positive axis: get value when in [0, 1].
-                        grab_val = max(0, joystick.get_axis(joy_grab))
-                    elif joy_grab_mask & 0b010000:
-                        # Negative axis: get value when in [-1, 0].
-                        grab_val = -min(joystick.get_axis(joy_grab), 0)
-                    else:
-                        # Entire axis: set value in range [0, 1].
-                        grab_val = 0.5*joystick.get_axis(joy_grab) + 0.5
-                elif (joy_grab_mask & 0b000100
-                        and joy_grab < joystick.get_numhats()):
-                    if joy_grab_mask == 0b000111:
-                        # Up: get second hat coordinate.
-                        grab_val = joystick.get_hat(joy_grab)[1] == 1
-                    elif joy_grab_mask & 0b000010:
-                        # Down: get negative of second hat coordinate.
-                        grab_val = joystick.get_hat(joy_grab)[1] == -1
-                    elif joy_grab_mask & 0b000001:
-                        # Right: get first hat coordinate.
-                        grab_val = joystick.get_hat(joy_grab)[0] == 1
-                    else:
-                        # Left: get negative of first hat coordinate.
-                        grab_val = joystick.get_hat(joy_grab)[0] == -1
-                elif joy_grab < joystick.get_numbuttons():
-                    grab_val = joystick.get_button(joy_grab)
-                else:
-                    grab_val = 0
-
-                # Check for release.
-                if (joy_release_mask & 0b100000
-                        and joy_release < joystick.get_numaxes()):
-                    if joy_release_mask & 0b001000:
-                        # Positive axis: get value when in [0, 1].
-                        grab_val -= max(0, joystick.get_axis(joy_release))
-                    elif joy_release_mask & 0b010000:
-                        # Negative axis: get value when in [-1, 0].
-                        grab_val -= -min(joystick.get_axis(joy_release), 0)
-                    else:
-                        # Entire axis: set value in range [0, 1].
-                        grab_val -= 0.5*joystick.get_axis(joy_release) + 0.5
-                elif (joy_release_mask & 0b000100
-                        and joy_release < joystick.get_numhats()):
-                    if joy_release_mask == 0b000111:
-                        # Up: get second hat coordinate.
-                        grab_val -= joystick.get_hat(joy_release)[1] == 1
-                    elif joy_release_mask & 0b000010:
-                        # Down: get negative of second hat coordinate.
-                        grab_val -= joystick.get_hat(joy_release)[1] == -1
-                    elif joy_release_mask & 0b000001:
-                        # Right: get first hat coordinate.
-                        grab_val -= joystick.get_hat(joy_release)[0] == 1
-                    else:
-                        # Left: get negative of first hat coordinate.
-                        grab_val -= joystick.get_hat(joy_release)[0] == -1
-                elif joy_release < joystick.get_numbuttons():
-                    grab_val -= joystick.get_button(joy_release)
-
-                # Check for flex forward.
-                if (joy_forward_mask & 0b100000
-                        and joy_forward < joystick.get_numaxes()):
-                    if joy_forward_mask & 0b001000:
-                        # Positive axis: get value when in [0, 1].
-                        flex_val = max(0, joystick.get_axis(joy_forward))
-                    elif joy_forward_mask & 0b010000:
-                        # Negative axis: get value when in [-1, 0].
-                        flex_val = -min(joystick.get_axis(joy_forward), 0)
-                    else:
-                        # Entire axis: set value in range [0, 1].
-                        flex_val = 0.5*joystick.get_axis(joy_forward) + 0.5
-                elif (joy_forward_mask & 0b000100
-                        and joy_forward < joystick.get_numhats()):
-                    if joy_forward_mask == 0b000111:
-                        # Up: get second hat coordinate.
-                        flex_val = joystick.get_hat(joy_forward)[1] == 1
-                    elif joy_forward_mask & 0b000010:
-                        # Down: get negative of second hat coordinate.
-                        flex_val = joystick.get_hat(joy_forward)[1] == -1
-                    elif joy_forward_mask & 0b000001:
-                        # Right: get first hat coordinate.
-                        flex_val = joystick.get_hat(joy_forward)[0] == 1
-                    else:
-                        # Left: get negative of first hat coordinate.
-                        flex_val = joystick.get_hat(joy_forward)[0] == -1
-                elif joy_forward < joystick.get_numbuttons():
-                    flex_val = joystick.get_button(joy_forward)
-                else:
-                    flex_val = 0
-
-                # Check for flex backward.
-                if (joy_backward_mask & 0b100000
-                        and joy_backward < joystick.get_numaxes()):
-                    if joy_backward_mask & 0b001000:
-                        # Positive axis: get value when in [0, 1].
-                        flex_val -= max(0, joystick.get_axis(joy_backward))
-                    elif joy_backward_mask & 0b010000:
-                        # Negative axis: get value when in [-1, 0].
-                        flex_val -= -min(joystick.get_axis(joy_backward), 0)
-                    else:
-                        # Entire axis: set value in range [0, 1].
-                        flex_val -= 0.5*joystick.get_axis(joy_backward) + 0.5
-                elif (joy_backward_mask & 0b000100
-                        and joy_backward < joystick.get_numhats()):
-                    if joy_backward_mask == 0b000111:
-                        # Up: get second hat coordinate.
-                        flex_val -= joystick.get_hat(joy_backward)[1] == 1
-                    elif joy_backward_mask & 0b000010:
-                        # Down: get negative of second hat coordinate.
-                        flex_val -= joystick.get_hat(joy_backward)[1] == -1
-                    elif joy_backward_mask & 0b000001:
-                        # Right: get first hat coordinate.
-                        flex_val -= joystick.get_hat(joy_backward)[0] == 1
-                    else:
-                        # Left: get negative of first hat coordinate.
-                        flex_val -= joystick.get_hat(joy_backward)[0] == -1
-                elif joy_backward < joystick.get_numbuttons():
-                    flex_val -= joystick.get_button(joy_backward)
-
-                # Check for turn right.
-                if (joy_right_mask & 0b100000
-                        and joy_right < joystick.get_numaxes()):
-                    if joy_right_mask & 0b001000:
-                        # Positive axis: get value when in [0, 1].
-                        turn_val = max(0, joystick.get_axis(joy_right))
-                    elif joy_right_mask & 0b010000:
-                        # Negative axis: get value when in [-1, 0].
-                        turn_val = -min(joystick.get_axis(joy_right), 0)
-                    else:
-                        # Entire axis: set value in range [0, 1].
-                        turn_val = 0.5*joystick.get_axis(joy_right) + 0.5
-                elif (joy_right_mask & 0b000100
-                        and joy_right < joystick.get_numhats()):
-                    if joy_right_mask == 0b000111:
-                        # Up: get second hat coordinate.
-                        turn_val = joystick.get_hat(joy_right)[1] == 1
-                    elif joy_right_mask & 0b000010:
-                        # Down: get negative of second hat coordinate.
-                        turn_val = joystick.get_hat(joy_right)[1] == -1
-                    elif joy_right_mask & 0b000001:
-                        # Right: get first hat coordinate.
-                        turn_val = joystick.get_hat(joy_right)[0] == 1
-                    else:
-                        # Left: get negative of first hat coordinate.
-                        turn_val = joystick.get_hat(joy_right)[0] == -1
-                elif joy_right < joystick.get_numbuttons():
-                    turn_val = joystick.get_button(joy_right)
-                else:
-                    turn_val = 0
-
-                # Check for turn left.
-                if (joy_left_mask & 0b100000
-                        and joy_left < joystick.get_numaxes()):
-                    if joy_left_mask & 0b001000:
-                        # Positive axis: get value when in [0, 1].
-                        turn_val -= max(0, joystick.get_axis(joy_left))
-                    elif joy_left_mask & 0b010000:
-                        # Negative axis: get value when in [-1, 0].
-                        turn_val -= -min(joystick.get_axis(joy_left), 0)
-                    else:
-                        # Entire axis: set value in range [0, 1].
-                        turn_val -= 0.5*joystick.get_axis(joy_left) + 0.5
-                elif (joy_left_mask & 0b000100
-                        and joy_left < joystick.get_numhats()):
-                    if joy_left_mask == 0b000111:
-                        # Up: get second hat coordinate.
-                        turn_val -= joystick.get_hat(joy_left)[1] == 1
-                    elif joy_left_mask & 0b000010:
-                        # Down: get negative of second hat coordinate.
-                        turn_val -= joystick.get_hat(joy_left)[1] == -1
-                    elif joy_left_mask & 0b000001:
-                        # Right: get first hat coordinate.
-                        turn_val -= joystick.get_hat(joy_left)[0] == 1
-                    else:
-                        # Left: get negative of first hat coordinate.
-                        turn_val -= joystick.get_hat(joy_left)[0] == -1
-                elif joy_left < joystick.get_numbuttons():
-                    turn_val -= joystick.get_button(joy_left)
-
+                grab_val = (get_joystick_input(joystick,
+                                               joy_grab,
+                                               joy_grab_mask)
+                            - get_joystick_input(joystick,
+                                                 joy_release,
+                                                 joy_release_mask))
+                flex_val = (get_joystick_input(joystick,
+                                               joy_forward,
+                                               joy_forward_mask)
+                            - get_joystick_input(joystick,
+                                                 joy_backward,
+                                                 joy_backward_mask))
+                turn_val = (get_joystick_input(joystick,
+                                               joy_right,
+                                               joy_right_mask)
+                            - get_joystick_input(joystick,
+                                                 joy_left,
+                                                 joy_left_mask))
 
                 # If grab input pressed, increase grab up to 255.
                 # Otherwise, if release input pressed, decrease grab
@@ -530,12 +442,13 @@ def main():
 
 
             # Write 6 bytes for grab, flex, and turn values of hand.
-            robot_hand.write(bytes([0x19, grab_serial,
-                                    0x16, flex_serial,
-                                    0x17, turn_serial]))
+            if robot_hand is not None:
+                robot_hand.write(bytes([0x19, grab_serial,
+                                        0x16, flex_serial,
+                                        0x17, turn_serial]))
 
             # Allow robot hand text to display on screen.
-            if robot_hand.in_waiting > 0:
+            if robot_hand is not None and robot_hand.in_waiting > 0:
                 hand_text = font.render(robot_hand.read_until().decode()[:-2],
                                         False, (255, 255, 255))
 
@@ -556,11 +469,13 @@ def main():
             clock.tick(30)  # Update robot every 30th of a second.
 
     except KeyboardInterrupt:
-        robot_hand.close()
+        if robot_hand is not None:
+            robot_hand.close()
         sys.exit()
     except OSError:
         sys.stderr.write("The robot hand disconnected.  Exiting.\n")
-        robot_hand.close()
+        if robot_hand is not None:
+            robot_hand.close()
         sys.exit(1)
 
 
